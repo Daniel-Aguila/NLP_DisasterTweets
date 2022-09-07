@@ -1,7 +1,9 @@
 from statistics import mode
+from numpy import pad
 import pandas as pd
 import tensorflow as tf
 from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 train_data = pd.read_csv("train.csv")
 test_data = pd.read_csv("test.csv")
@@ -33,8 +35,12 @@ test_data['keyword'] = test_data['keyword'].fillna(str(test_data_keyword_mode))
 train_features = train_data.copy()
 train_labels = train_features.pop('target')
 
-tokenizer = Tokenizer(num_words = 20, oov_token = "<OOV>")
+tokenizer = Tokenizer(num_words = 100, oov_token = "<OOV>")
 tokenizer.fit_on_texts(train_features['text'])
 word_index = tokenizer.word_index
-print(word_index)
+train_features['text'] = tokenizer.texts_to_sequences(train_features['text'])
+print(train_features['text'][:5])
+padded = pad_sequences(train_features['text'],padding='post')
+print(padded[:2])
+print(padded.shape)
 
